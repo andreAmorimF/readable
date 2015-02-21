@@ -166,7 +166,6 @@ public class ReadableContentExtractor {
         // Goes in and removes DIV's that have more non <p> stuff than <p> stuff
         killDivs(topDiv);
 
-        // removes span tags
         // Removes any consecutive <br />'s into just one <br />
         killCodeSpansAndBreaks(topDiv);
 
@@ -174,9 +173,13 @@ public class ReadableContentExtractor {
         cleanIrrelevantImages(topDiv);
         cleanIrrelevantAttributes(topDiv);
 
+        // Clean "move-to-text" links
+        cleanTextMoveLinks(topDiv);
+
         topDiv.normalize();
 
         // Remove title from the text (duplicates may exists inside article div)
+        List<Element> toRemove = new ArrayList<>();
         if (title != null) {
             String[] hlist = {"h1", "h2", "h3"};
             for (String hx : hlist) {
@@ -184,7 +187,7 @@ public class ReadableContentExtractor {
                 for (int i = 0; i < duplicateCandidates.getLength(); i++) {
                     Element duplicateCandidate = (Element) duplicateCandidates.item(i);
                     if (title.equals(getFirstLevelTextContent(duplicateCandidate)))
-                        duplicateCandidate.getParentNode().removeChild(duplicateCandidate);
+                        toRemove.add(duplicateCandidate);
                 }
             }
         }
@@ -201,7 +204,11 @@ public class ReadableContentExtractor {
                 }
             }
             if (duplicateCandidate != null && description.equals(getFirstLevelTextContent(duplicateCandidate)))
-                duplicateCandidate.getParentNode().removeChild(duplicateCandidate);
+                toRemove.add(duplicateCandidate);
+        }
+
+        for (Element el : toRemove) {
+            el.getParentNode().removeChild(el);
         }
 
         return topDiv;
@@ -417,6 +424,7 @@ public class ReadableContentExtractor {
     }
 
     protected void killDivs (Element e) {
+        List<Element> toRemove = new ArrayList<>();
         NodeList divsList = e.getElementsByTagName("div");
 
         // Gather counts for other typical elements embedded within.
@@ -441,7 +449,7 @@ public class ReadableContentExtractor {
                 if (( imgCount > pCount || liCount > pCount || aCount > pCount || pCount == 0)
                         && ( preCount == 0 && codeCount == 0 && embedCount == 0 && objectCount == 0 && sphereit == 0 )) {
                     if (pCount != 0 && imgCount == 1)
-                        div.getParentNode().removeChild(div);
+                        toRemove.add(div);
                 }
             }
 
@@ -450,7 +458,11 @@ public class ReadableContentExtractor {
 
             // Removing elements by stopwords
             if (stopwordPattern.reset(divId).find() || stopwordPattern.reset(divClasses).find())
-                div.getParentNode().removeChild(div);
+                toRemove.add(div);
+        }
+
+        for (Element el : toRemove) {
+            el.getParentNode().removeChild(el);
         }
     }
 
@@ -487,6 +499,8 @@ public class ReadableContentExtractor {
     }
 
     protected void cleanIrrelevantImages(Element root) {
+        List<Element> toRemove = new ArrayList<>();
+
         // Create base URI
         URI base = URI.create(this.doc.getBaseURI());
 
@@ -509,7 +523,7 @@ public class ReadableContentExtractor {
             }
 
             if ((width != null && width < 70) || (height != null && height < 70)) {
-                image.getParentNode().removeChild(image);
+                toRemove.add(image);
                 continue;
             }
 
@@ -524,6 +538,29 @@ public class ReadableContentExtractor {
             String absolute = image.getAttribute("src");
             image.setAttribute("src", base.resolve(absolute).toString());
         }
+
+        for (Element link : toRemove) {
+            link.getParentNode().removeChild(link);
+        }
+    }
+
+    protected void cleanTextMoveLinks(Element root) {
+        List<Element> toRemove = new ArrayList<>();
+
+        NodeList links = root.getElementsByTagName("a");
+        for (int i = 0; i < links.getLength(); i++) {
+            Element link = (Element) links.item(i);
+            NamedNodeMap attributes = link.getAttributes();
+            for (int j = 0; j < attributes.getLength(); j++) {
+                Attr attribute = (Attr) attributes.item(j);
+                if (attribute.getName().matches("(?i:href)") && attribute.getValue().startsWith("#"))
+                    toRemove.add(link);
+            }
+        }
+
+        for (Element link : toRemove) {
+            link.getParentNode().removeChild(link);
+        }
     }
 
     protected void clean(Element e, String tagName) {
@@ -532,6 +569,7 @@ public class ReadableContentExtractor {
 
     protected void clean(Element e, String tagName, Integer minWords) {
         NodeList targetList;
+        List<Element> toRemove = new ArrayList<>();
 
         if (tagName.equalsIgnoreCase("table")) {
             targetList = e.getElementsByTagName(tagName);
@@ -540,7 +578,7 @@ public class ReadableContentExtractor {
                 Element target = (Element) targetList.item(i);
                 int cells = target.getElementsByTagName("td").getLength();
                 if (cells < minWords)
-                    target.getParentNode().removeChild(target);
+                    toRemove.add(target);
             }
         } else {
             targetList = e.getElementsByTagName(tagName);
@@ -549,8 +587,12 @@ public class ReadableContentExtractor {
                 Element target = (Element) targetList.item(i);
                 int length = textLength(target);
                 if ((length < minWords) && !target.getTagName().equalsIgnoreCase("pre"))
-                    target.getParentNode().removeChild(target);
+                    toRemove.add(target);
             }
+        }
+
+        for (Element el : toRemove) {
+            el.getParentNode().removeChild(el);
         }
     }
 

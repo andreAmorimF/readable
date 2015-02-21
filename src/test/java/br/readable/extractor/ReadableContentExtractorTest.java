@@ -1,6 +1,9 @@
 package br.readable.extractor;
 
+import java.awt.*;
 import java.io.*;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 import org.htmlcleaner.CleanerProperties;
@@ -71,7 +74,7 @@ public class ReadableContentExtractorTest {
         System.out.println("Html: " + writer.toString());
 
         /*File htmlFile = new File("test.html");
-        FileUtils.writeStringToFile(htmlFile,  writer.toString());
+        FileUtils.writeStringToFile(htmlFile, writer.toString());
         Desktop.getDesktop().browse(htmlFile.toURI());*/
     }
 }
