@@ -14,8 +14,8 @@ Maven artifacts can be fetched using this tag on your pom's dependencies section
 ```xml
 <dependency>
     <groupId>br.com</groupId>
-        <artifactId>readable</artifactId>
-        <version>1.0</version>
+    <artifactId>readable</artifactId>
+    <version>1.0</version>
     <type>jar</type>
 </dependency>
 ```
