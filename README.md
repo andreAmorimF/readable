@@ -43,7 +43,7 @@ Element main = extractor.getMainContent();
 
 ## Author
 
-Andre Fonseca <andre.amorimfonseca at gmail.com>
+Andre Fonseca <andre.amorimfonseca@gmail.com>
 
 ## License
 
