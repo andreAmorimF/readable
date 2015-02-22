@@ -1,4 +1,4 @@
-package br.readable.extractor;
+package br.com.readable.extractor;
 
 import java.net.URI;
 import java.util.*;

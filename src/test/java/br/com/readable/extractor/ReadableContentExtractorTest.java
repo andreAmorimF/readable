@@ -1,9 +1,7 @@
-package br.readable.extractor;
+package br.com.readable.extractor;
 
-import java.awt.*;
 import java.io.*;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 import org.htmlcleaner.CleanerProperties;
