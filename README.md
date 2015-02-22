@@ -1,7 +1,9 @@
 Readable
 ========
 
-Yet another readability library for Java. It works great for news and blog sites.
+Yet another readability library for Java. It uses some heuristics to extract readable content from web pages (dropping menus, adds, etc.).
+
+It works great for news and blog sites.
 
 Check out it working on: http://brreadable.herokuapp.com/
 
