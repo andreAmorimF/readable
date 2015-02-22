@@ -9,10 +9,33 @@ Check out it working on: http://brreadable.herokuapp.com/
 
 ### Maven
 
-Maven artifacts can be fetched on the following repository:
+Maven artifacts can be fetched using this tag on your pom's dependencies section:
 
 ```xml
+<dependency>
+    <groupId>br.com</groupId>
+        <artifactId>readable</artifactId>
+        <version>1.0</version>
+    <type>jar</type>
+</dependency>
 ```
+
+The following repository needs to be specified:
+
+```xml
+<repositories>
+    <repository>
+        <snapshots>
+            <enabled>false</enabled>
+        </snapshots>
+        <id>bintray-andreamorimf</id>
+        <name>bintray-andreamorimf</name>
+        <url>http://dl.bintray.com/andreamorimf/readable</url>
+    </repository>
+    ...
+</repositories>
+```
+
 ## How to use it
 
 In order to use the library, you can call (using a default org.w3c.dom.Document):
